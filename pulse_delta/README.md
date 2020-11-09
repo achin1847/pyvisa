@@ -23,15 +23,15 @@
   - Select ON for the RS-232 interface
   - Select the 19.2K baud rate
   - Select the NONE setting for flow control
+  - **Important Notice**
+    - When 2182A is set with RS-232 communication mode, it cannot be recognized by GPIB. The setting is retained even if the power is turned off.
+    - After the measurement is completed, **please select OFF** for the RS-232 interface on 2182A.
 6. **6221** RS-232 communication Setting
   - Press COMM key > select RS-232
   - Make sure 6221 reboots and the baud rate is set as 19.2K
 6. **6221** GPIB communication Setting
   - Press COMM key > select GPIB
   - Make sure 6221 reboots
-- **Important Notice**
-  - When 2182A is set with RS-232 communication mode, it cannot be recognized by GPIB. The setting is retained even if the power is turned off.
-  - After the measurement is completed, **please select OFF** for the RS-232 interface on 2182A.
 
 ### Example of how to run script
 1. Download scripts
@@ -41,7 +41,7 @@ $ cd pyvisa/example/
 ```
 2. Please confirm that 6221 can be recognized and GPIB number
 ```
-$ python inq_inst.py # confirm that 6221 can be recognized
+$ python inq_inst.py
 (GPIB0::12::INSTR')
 KEITHLEY INSTRUMENTS INC.,MODEL 6221
 ```
