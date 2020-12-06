@@ -24,17 +24,20 @@ DELTA_DELAY = 100e-3
 DELTA_COUNT = 10
 TRACE_POINT = 10
 MEAS_TIME = 5
+VOL_MIN = 100e-6
+MEAS_POINT_NUM = 5
+VOL_DELTA = 10e-6
 # -----------------------------------------------------------
 # Measurement
 # -----------------------------------------------------------
 ke_6221.write('*RST')
-ke_6221.write('UNIT OHMS')
+ke_6221.write('UNIT VOLTS')
 ke_6221.write('SOUR:DELT:DELay %f' % DELTA_DELAY)
 ke_6221.write('SOUR:DELT:COUN %d' % DELTA_COUNT)
 ke_6221.write('SOUR:DELT:CAB ON')
 ke_6221.write('TRAC:POIN %d' % TRACE_POINT)
-for meas_point in range(1, 10):
-    source_curr = meas_point * 1e-6
+for meas_point in range(MEAS_POINT_NUM):
+    source_curr = VOL_MIN + meas_point * VOL_DELTA
     ke_6221.write('SOUR:DELT:HIGH %f' % source_curr)
     ke_6221.write('SOUR:DELT:ARM') # arms delta mode
     ke_6221.write('INIT:IMM') # starts delta measurements
