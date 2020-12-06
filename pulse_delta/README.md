@@ -45,19 +45,10 @@ $ python inq_inst.py
 (GPIB0::12::INSTR')
 KEITHLEY INSTRUMENTS INC.,MODEL 6221
 ```
-3. Run a pulse delta measurement script
-  - Optional: fix pulse_delta_meas.py if the GPIB0 number is not GPIB0::12::INSTR
+3. Run a pulse delta measurement script (example)
+  - Optional: fix *.py if the GPIB0 number is not GPIB0::12::INSTR
 ```
 $ cd ../pulse_delta/
-$ python pulse_delta_meas.py > result.csv
-$ less result.csv # result with 10 ohm reference resistance
-source_current, avg_meas_data: 1e-06 9.966407870000001
-source_current, avg_meas_data: 2e-06 9.975730229
-source_current, avg_meas_data: 3e-06 9.974188137
-source_current, avg_meas_data: 4e-06 9.973881340000002
-source_current, avg_meas_data: 4.9999999999999996e-06 9.974628638999999
-source_current, avg_meas_data: 6e-06 9.975522709
-source_current, avg_meas_data: 7e-06 9.974938679000001
-source_current, avg_meas_data: 8e-06 9.974939918
-source_current, avg_meas_data: 9e-06 9.974230099
+$ python curr_sweep.py > result.csv
+$ less result.csv
 ```
