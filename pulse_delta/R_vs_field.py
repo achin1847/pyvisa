@@ -22,17 +22,17 @@ adc_6240 = rm.open_resource('GPIB0::1::INSTR') # ADC Corp.,6240A
 # -----------------------------------------------------------
 # Constants of ADCMT 6240A
 # -----------------------------------------------------------
-MAG_VOL_MIN = -0.1
-MEAS_POINT_NUM = 10
-MAG_VOL_DELTA = 0.01
+MAG_VOL_MIN = 1.1
+MEAS_POINT_NUM = 50
+MAG_VOL_DELTA = -0.044
 # -----------------------------------------------------------
 # Constants of KEITHLEY6221
 # -----------------------------------------------------------
 DELTA_DELAY = 100e-3
 DELTA_COUNT = 10
 TRACE_POINT = 10
-MEAS_TIME = 3 # sec
-SOURCE_CURR = 1e-6
+MEAS_TIME = 5 # sec
+SOURCE_CURR = 100e-6
 # -----------------------------------------------------------
 # Settings of ADCMT 6240A
 # -----------------------------------------------------------
@@ -46,7 +46,7 @@ adc_6240.write('OPR') # output on
 # Settings of KEITHLEY6221
 # -----------------------------------------------------------
 ke_6221.write('*RST')
-ke_6221.write('UNIT OHMS')
+ke_6221.write('UNIT VOLTS')
 ke_6221.write('SOUR:DELT:DELay %f' % DELTA_DELAY)
 ke_6221.write('SOUR:DELT:COUN %d' % DELTA_COUNT)
 ke_6221.write('SOUR:DELT:CAB ON')
@@ -55,7 +55,7 @@ ke_6221.write('SOUR:DELT:HIGH %f' % SOURCE_CURR)
 # -----------------------------------------------------------
 # Measurement
 # -----------------------------------------------------------
-print("voltage_of_magnet average_resistance")
+print("voltage_of_magnet average_voltage")
 for meas_point in range(MEAS_POINT_NUM):
     mag_vol = MAG_VOL_MIN + meas_point * MAG_VOL_DELTA
     adc_6240.write('SOV%f' % mag_vol)
