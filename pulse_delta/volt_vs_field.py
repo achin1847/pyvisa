@@ -22,9 +22,9 @@ adc_6240 = rm.open_resource('GPIB0::1::INSTR') # ADC Corp.,6240A
 # -----------------------------------------------------------
 # Constants of ADCMT 6240A
 # -----------------------------------------------------------
-MAG_VOL_MIN = 1.1
-MEAS_POINT_NUM = 50
-MAG_VOL_DELTA = -0.044
+MAG_VOL_MIN = -0.8
+MEAS_POINT_NUM = 500
+MAG_VOL_DELTA = 0.0032
 # -----------------------------------------------------------
 # Constants of KEITHLEY6221
 # -----------------------------------------------------------
@@ -65,7 +65,7 @@ for meas_point in range(MEAS_POINT_NUM):
     ke_6221.write('SOUR:SWE:ABOR') # stops delta mode
     read_data = ke_6221.query_ascii_values("trace:data?") # even: meas_data, odd:  meas_time
     meas_data = read_data[::2]
-    print('{:.2f}'.format(mag_vol), numpy.average(meas_data))
+    print('{:.4f}'.format(mag_vol), numpy.average(meas_data))
 
 adc_6240.write('SBY')  # output off
 adc_6240.query('*OPC?')
