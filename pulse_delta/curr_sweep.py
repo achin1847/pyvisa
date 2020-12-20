@@ -27,9 +27,10 @@ DELTA_COUNT4FLIP = 1
 TRACE_POINT4FLIP = 1
 FLIP_TIME = 3
 MEAS_TIME = 5
-CURR_MIN = 100e-6
-MEAS_POINT_NUM = 5
-CURR_DELTA = 10e-6
+CURR_MIN = 22e-3
+# CURR_MIN = 20e-3
+MEAS_POINT_NUM = 47
+CURR_DELTA = -1.00E-03
 SOURCE_MEAS_CURR = 100e-6
 # -----------------------------------------------------------
 # Measurement
