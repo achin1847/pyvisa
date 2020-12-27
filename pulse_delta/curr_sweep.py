@@ -40,15 +40,16 @@ SOURCE_MEAS_CURR = 100e-6
 # -----------------------------------------------------------
 ke_6221.write('*RST')
 ke_6221.write('UNIT VOLTS')
-ke_6221.write('SOUR:PDEL:RANG BEST')
-ke_6221.write('SOUR:PDEL:INT 10')
-ke_6221.write('SOUR:PDEL:INT %d' % INTVAL)
-ke_6221.write('SOUR:PDEL:SWE OFF')
-ke_6221.write('SOUR:PDEL:LME 2')
 
 print("source_current average_voltage(flip) average_voltage(measurement)")
 for meas_point in range(MEAS_POINT_NUM):
     source_curr = CURR_MIN + meas_point * CURR_DELTA
+    ke_6221.write('SOUR:PDEL:RANG BEST')
+    ke_6221.write('SOUR:PDEL:INT 10')
+    ke_6221.write('SOUR:PDEL:INT %d' % INTVAL)
+    ke_6221.write('SOUR:PDEL:SWE OFF')
+    ke_6221.write('SOUR:PDEL:LME 2')
+
     ke_6221.write('SOUR:PDEL:HIGH %f' % source_curr)
     ke_6221.write('SOUR:PDEL:LOW %f' % CURR_LOW)
     ke_6221.write('SOUR:PDEL:WIDT %f' % PULSE_WIDTH)
@@ -62,14 +63,16 @@ for meas_point in range(MEAS_POINT_NUM):
     read_data_flip_volt = ke_6221.query_ascii_values("trace:data?") # even: meas_data_flip_volt, odd:  meas_time
     meas_data_flip_volt = read_data_flip_volt[::2]
 
-    ke_6221.write('SOUR:PDEL:HIGH %f' % SOURCE_MEAS_CURR)
-    ke_6221.write('SOUR:PDEL:LOW %f' % CURR_LOW)
+    ke_6221.write('SOUR:DELT:DELay %f' % DELTA_DELAY)
     ke_6221.write('SOUR:DELT:COUN %d' % DELTA_COUNT4MEAS)
+    ke_6221.write('SOUR:DELT:CAB ON')
     ke_6221.write('TRAC:POIN %d' % TRACE_POINT4MEAS)
-    ke_6221.write('SOUR:PDEL:ARM') # arms delta mode
+    ke_6221.write('SOUR:DELT:HIGH %f' % SOURCE_MEAS_CURR)
+    ke_6221.write('SOUR:DELT:ARM') # arms delta mode
     ke_6221.write('INIT:IMM') # starts delta measurements
     sleep(MEAS_TIME) # wait until measurement stops
     ke_6221.write('SOUR:SWE:ABOR') # stops delta mode
+
     read_data_meas_volt = ke_6221.query_ascii_values("trace:data?") # even: meas_data_flip_volt, odd:  meas_time
     meas_data_meas_volt = read_data_meas_volt[::2]
 
