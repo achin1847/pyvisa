@@ -20,43 +20,53 @@ ke_6221 = rm.open_resource('GPIB0::12::INSTR') # KEITHLEY6221
 # -----------------------------------------------------------
 # Constants
 # -----------------------------------------------------------
-DELTA_DELAY = 100e-3
+INTVAL = 10
+DELTA_DELAY = 100e-6
+PULSE_WIDTH = 500e-6
 DELTA_COUNT4MEAS = 10
 TRACE_POINT4MEAS = 10
 DELTA_COUNT4FLIP = 1
 TRACE_POINT4FLIP = 1
 FLIP_TIME = 3
 MEAS_TIME = 5
-CURR_MIN = 22e-3
-# CURR_MIN = 20e-3
-MEAS_POINT_NUM = 47
-CURR_DELTA = -1.00E-03
+CURR_LOW = 0 # 0-CURR_HIGH pulse
+CURR_MIN = -20e-3
+MEAS_POINT_NUM = 20
+# MEAS_POINT_NUM = 5
+CURR_DELTA = 2.00E-03
 SOURCE_MEAS_CURR = 100e-6
 # -----------------------------------------------------------
 # Measurement
 # -----------------------------------------------------------
 ke_6221.write('*RST')
 ke_6221.write('UNIT VOLTS')
-ke_6221.write('SOUR:DELT:DELay %f' % DELTA_DELAY)
-ke_6221.write('SOUR:DELT:CAB ON')
+ke_6221.write('SOUR:PDEL:RANG BEST')
+ke_6221.write('SOUR:PDEL:INT 10')
+ke_6221.write('SOUR:PDEL:INT %d' % INTVAL)
+ke_6221.write('SOUR:PDEL:SWE OFF')
+ke_6221.write('SOUR:PDEL:LME 2')
 
 print("source_current average_voltage(flip) average_voltage(measurement)")
 for meas_point in range(MEAS_POINT_NUM):
     source_curr = CURR_MIN + meas_point * CURR_DELTA
-    ke_6221.write('SOUR:DELT:HIGH %f' % source_curr)
+    ke_6221.write('SOUR:PDEL:HIGH %f' % source_curr)
+    ke_6221.write('SOUR:PDEL:LOW %f' % CURR_LOW)
+    ke_6221.write('SOUR:PDEL:WIDT %f' % PULSE_WIDTH)
+    ke_6221.write('SOUR:PDEL:SDEL %f' % DELTA_DELAY)
     ke_6221.write('SOUR:DELT:COUN %d' % DELTA_COUNT4FLIP)
     ke_6221.write('TRAC:POIN %d' % TRACE_POINT4FLIP)
-    ke_6221.write('SOUR:DELT:ARM') # arms delta mode
+    ke_6221.write('SOUR:PDEL:ARM') # arms delta mode
     ke_6221.write('INIT:IMM') # starts delta measurements
     sleep(FLIP_TIME) # wait until measurement stops
     ke_6221.write('SOUR:SWE:ABOR') # stops delta mode
     read_data_flip_volt = ke_6221.query_ascii_values("trace:data?") # even: meas_data_flip_volt, odd:  meas_time
     meas_data_flip_volt = read_data_flip_volt[::2]
 
-    ke_6221.write('SOUR:DELT:HIGH %f' % SOURCE_MEAS_CURR)
+    ke_6221.write('SOUR:PDEL:HIGH %f' % SOURCE_MEAS_CURR)
+    ke_6221.write('SOUR:PDEL:LOW %f' % CURR_LOW)
     ke_6221.write('SOUR:DELT:COUN %d' % DELTA_COUNT4MEAS)
     ke_6221.write('TRAC:POIN %d' % TRACE_POINT4MEAS)
-    ke_6221.write('SOUR:DELT:ARM') # arms delta mode
+    ke_6221.write('SOUR:PDEL:ARM') # arms delta mode
     ke_6221.write('INIT:IMM') # starts delta measurements
     sleep(MEAS_TIME) # wait until measurement stops
     ke_6221.write('SOUR:SWE:ABOR') # stops delta mode
