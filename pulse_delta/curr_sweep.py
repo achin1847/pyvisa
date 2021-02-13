@@ -22,7 +22,6 @@ ke_6221 = rm.open_resource('GPIB0::12::INSTR') # KEITHLEY6221
 # -----------------------------------------------------------
 # Constants
 # -----------------------------------------------------------
-INTVAL = 1
 DELTA_DELAY = 100e-6
 PULSE_WIDTH = 500e-6
 DELTA_COUNT4MEAS = 10
@@ -55,7 +54,7 @@ ke_6221.write('*RST')
 
 ke_6221.write('UNIT VOLTS')
 ke_6221.write('SOUR:PDEL:RANG BEST')
-ke_6221.write('SOUR:PDEL:INT %d' % INTVAL)
+ke_6221.write('SOUR:PDEL:INT 5')
 ke_6221.write('SOUR:PDEL:SWE OFF')
 ke_6221.write('SOUR:PDEL:LME 2')
 ke_6221.write('SOUR:PDEL:LOW %f' % CURR_LOW)
