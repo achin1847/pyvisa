@@ -7,7 +7,7 @@
 #                      Trigger Link cable
 # Reference: Reference Manual 622x-901-01 Rev. C / October 2008
 # -----------------------------------------------------------
-import visa
+import pyvisa as visa
 import matplotlib.pyplot as plt
 from RsInstrument.RsInstrument import RsInstrument, BinFloatFormat
 from time import sleep
@@ -32,12 +32,14 @@ FLIP_TIME = 5
 MEAS_TIME = 5
 CURR_LOW = 0 # 0-CURR_HIGH pulse
 
-CURR_MIN_0 = -20e-3
-MEAS_POINT_NUM_0 = 21
+CURR_4_SWICH = -20e-3
+
+CURR_MIN_0 = 0
+MEAS_POINT_NUM_0 = 11
 CURR_DELTA_0 = 2.00E-03
 
-CURR_MIN_1 = 20e-3
-MEAS_POINT_NUM_1 = 21
+CURR_MIN_1 = 24e-3
+MEAS_POINT_NUM_1 = 25
 CURR_DELTA_1 = -2.00E-03
 
 
@@ -61,7 +63,31 @@ ke_6221.write('SOUR:PDEL:LOW %f' % CURR_LOW)
 ke_6221.write('SOUR:PDEL:WIDT %f' % PULSE_WIDTH)
 ke_6221.write('SOUR:PDEL:SDEL %f' % DELTA_DELAY)
 
-print("seq1")
+print("Initialization")
+print("source_current average_voltage_for_flip average_voltage_for_meas")
+source_curr = CURR_4_SWICH
+ke_6221.write('SOUR:PDEL:HIGH %f' % source_curr)
+ke_6221.write('SOUR:PDEL:COUN %d' % DELTA_COUNT4FLIP)
+ke_6221.write('TRAC:POIN %d' % TRACE_POINT4FLIP)
+ke_6221.write('SOUR:PDEL:ARM') # arms delta mode
+ke_6221.write('INIT:IMM') # starts delta measurements
+sleep(FLIP_TIME) # wait until measurement stops
+ke_6221.write('SOUR:SWE:ABOR') # stops delta mode
+read_data_flip_volt = ke_6221.query_ascii_values("trace:data?") # even: meas_data_flip_volt, odd:  meas_time
+meas_data_flip_volt = read_data_flip_volt[::2]
+
+ke_6221.write('SOUR:PDEL:HIGH %f' % SOURCE_MEAS_CURR)
+ke_6221.write('SOUR:PDEL:COUN %d' % DELTA_COUNT4MEAS)
+ke_6221.write('TRAC:POIN %d' % TRACE_POINT4MEAS)
+ke_6221.write('SOUR:PDEL:ARM') # arms delta mode
+ke_6221.write('INIT:IMM') # starts delta measurements
+sleep(MEAS_TIME) # wait until measurement stops
+ke_6221.write('SOUR:SWE:ABOR') # stops delta mode
+read_data_meas_volt = ke_6221.query_ascii_values("trace:data?") # even: meas_data_flip_volt, odd:  meas_time
+meas_data_meas_volt = read_data_meas_volt[::2]
+print('{:.8f}'.format(source_curr), numpy.average(meas_data_flip_volt), numpy.average(meas_data_meas_volt))
+
+print("seq0")
 print("source_current average_voltage_for_flip average_voltage_for_meas")
 for meas_point in range(MEAS_POINT_NUM_0):
     source_curr = CURR_MIN_0 + meas_point * CURR_DELTA_0
@@ -86,7 +112,7 @@ for meas_point in range(MEAS_POINT_NUM_0):
     meas_data_meas_volt = read_data_meas_volt[::2]
     print('{:.8f}'.format(source_curr), numpy.average(meas_data_flip_volt), numpy.average(meas_data_meas_volt))
 
-print("seq2")
+print("seq1")
 print("source_current average_voltage_for_flip average_voltage_for_meas")
 for meas_point in range(MEAS_POINT_NUM_1):
     source_curr = CURR_MIN_1 + meas_point * CURR_DELTA_1
