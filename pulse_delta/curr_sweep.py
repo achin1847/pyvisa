@@ -38,10 +38,13 @@ CURR_MIN_0 = 0
 MEAS_POINT_NUM_0 = 11
 CURR_DELTA_0 = 2.00E-03
 
-CURR_MIN_1 = 24e-3
-MEAS_POINT_NUM_1 = 25
+CURR_MIN_1 = 20e-3
+MEAS_POINT_NUM_1 = 21
 CURR_DELTA_1 = -2.00E-03
 
+CURR_MIN_2 = -20e-3
+MEAS_POINT_NUM_2 = 21
+CURR_DELTA_2 = 2.00E-03
 
 SOURCE_MEAS_CURR = 100e-6
 # -----------------------------------------------------------
@@ -116,6 +119,31 @@ print("seq1")
 print("source_current average_voltage_for_flip average_voltage_for_meas")
 for meas_point in range(MEAS_POINT_NUM_1):
     source_curr = CURR_MIN_1 + meas_point * CURR_DELTA_1
+    ke_6221.write('SOUR:PDEL:HIGH %f' % source_curr)
+    ke_6221.write('SOUR:PDEL:COUN %d' % DELTA_COUNT4FLIP)
+    ke_6221.write('TRAC:POIN %d' % TRACE_POINT4FLIP)
+    ke_6221.write('SOUR:PDEL:ARM') # arms delta mode
+    ke_6221.write('INIT:IMM') # starts delta measurements
+    sleep(FLIP_TIME) # wait until measurement stops
+    ke_6221.write('SOUR:SWE:ABOR') # stops delta mode
+    read_data_flip_volt = ke_6221.query_ascii_values("trace:data?") # even: meas_data_flip_volt, odd:  meas_time
+    meas_data_flip_volt = read_data_flip_volt[::2]
+
+    ke_6221.write('SOUR:PDEL:HIGH %f' % SOURCE_MEAS_CURR)
+    ke_6221.write('SOUR:PDEL:COUN %d' % DELTA_COUNT4MEAS)
+    ke_6221.write('TRAC:POIN %d' % TRACE_POINT4MEAS)
+    ke_6221.write('SOUR:PDEL:ARM') # arms delta mode
+    ke_6221.write('INIT:IMM') # starts delta measurements
+    sleep(MEAS_TIME) # wait until measurement stops
+    ke_6221.write('SOUR:SWE:ABOR') # stops delta mode
+    read_data_meas_volt = ke_6221.query_ascii_values("trace:data?") # even: meas_data_flip_volt, odd:  meas_time
+    meas_data_meas_volt = read_data_meas_volt[::2]
+    print('{:.8f}'.format(source_curr), numpy.average(meas_data_flip_volt), numpy.average(meas_data_meas_volt))
+
+print("seq2")
+print("source_current average_voltage_for_flip average_voltage_for_meas")
+for meas_point in range(MEAS_POINT_NUM_2):
+    source_curr = CURR_MIN_2 + meas_point * CURR_DELTA_2
     ke_6221.write('SOUR:PDEL:HIGH %f' % source_curr)
     ke_6221.write('SOUR:PDEL:COUN %d' % DELTA_COUNT4FLIP)
     ke_6221.write('TRAC:POIN %d' % TRACE_POINT4FLIP)
