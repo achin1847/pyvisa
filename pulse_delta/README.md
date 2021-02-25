@@ -41,7 +41,7 @@ $ cd pyvisa/example/
 ```
 2. Please confirm that 6221 can be recognized and GPIB number
 ```
-$ python inq_inst.py
+$ python3 inq_inst.py
 (GPIB0::12::INSTR')
 KEITHLEY INSTRUMENTS INC.,MODEL 6221
 ```
@@ -49,6 +49,5 @@ KEITHLEY INSTRUMENTS INC.,MODEL 6221
   - Optional: fix *.py if the GPIB0 number is not GPIB0::12::INSTR
 ```
 $ cd ../pulse_delta/
-$ python curr_sweep.py > result.csv
-$ less result.csv
+$ python3 curr_sweep.py
 ```
