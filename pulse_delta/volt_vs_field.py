@@ -8,7 +8,7 @@
 #                      Trigger Link cable
 # Reference: Reference Manual 622x-901-01 Rev. C / October 2008
 # -----------------------------------------------------------
-import visa
+import pyvisa as visa
 import matplotlib.pyplot as plt
 from time import sleep
 import numpy
@@ -22,9 +22,13 @@ adc_6240 = rm.open_resource('GPIB0::1::INSTR') # ADC Corp.,6240A
 # -----------------------------------------------------------
 # Constants of ADCMT 6240A
 # -----------------------------------------------------------
-MAG_VOL_MIN = -0.8
-MEAS_POINT_NUM = 500
-MAG_VOL_DELTA = 0.0032
+MAG_VOL_MIN_P = 1.0
+MEAS_POINT_NUM_P = 21
+MAG_VOL_DELTA_P = -0.1
+
+MAG_VOL_MIN_M = -1.0
+MEAS_POINT_NUM_M = 21
+MAG_VOL_DELTA_M = 0.1
 # -----------------------------------------------------------
 # Constants of KEITHLEY6221
 # -----------------------------------------------------------
@@ -55,9 +59,21 @@ ke_6221.write('SOUR:DELT:HIGH %f' % SOURCE_CURR)
 # -----------------------------------------------------------
 # Measurement
 # -----------------------------------------------------------
-print("voltage_of_magnet average_voltage")
-for meas_point in range(MEAS_POINT_NUM):
-    mag_vol = MAG_VOL_MIN + meas_point * MAG_VOL_DELTA
+print("voltage_of_magnet average_voltage(p)")
+for meas_point in range(MEAS_POINT_NUM_P):
+    mag_vol = MAG_VOL_MIN_P + meas_point * MAG_VOL_DELTA_P
+    adc_6240.write('SOV%f' % mag_vol)
+    ke_6221.write('SOUR:DELT:ARM') # arms delta mode
+    ke_6221.write('INIT:IMM') # starts delta measurements
+    sleep(MEAS_TIME) # wait until measurement stops
+    ke_6221.write('SOUR:SWE:ABOR') # stops delta mode
+    read_data = ke_6221.query_ascii_values("trace:data?") # even: meas_data, odd:  meas_time
+    meas_data = read_data[::2]
+    print('{:.4f}'.format(mag_vol), numpy.average(meas_data))
+
+print("voltage_of_magnet average_voltage(m)")
+for meas_point in range(MEAS_POINT_NUM_M):
+    mag_vol = MAG_VOL_MIN_M + meas_point * MAG_VOL_DELTA_M
     adc_6240.write('SOV%f' % mag_vol)
     ke_6221.write('SOUR:DELT:ARM') # arms delta mode
     ke_6221.write('INIT:IMM') # starts delta measurements
