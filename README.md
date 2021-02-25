@@ -20,7 +20,7 @@ Scripts in this repository can be utilized instead of LabVIEW programs.
 ```
 $ git clone https://github.com/achin1847/pyvisa.git
 $ cd pyvisa/example/
-$ python inq_inst.py
+$ python3 inq_inst.py
 ('GPIB0::1::INSTR', 'GPIB0::14::INSTR')
 GPIB0::1::INSTR
 ADC Corp.,R6240A,440300035,B01
