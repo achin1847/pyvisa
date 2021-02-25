@@ -29,7 +29,7 @@
 6. **6221** RS-232 communication Setting
   - Press COMM key > select RS-232
   - Make sure 6221 reboots and the baud rate is set as 19.2K
-6. **6221** GPIB communication Setting
+7. **6221** GPIB communication Setting
   - Press COMM key > select GPIB
   - Make sure 6221 reboots
 
