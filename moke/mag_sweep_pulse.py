@@ -27,7 +27,7 @@ def set_pulse_timing(hold_time, meas_delay, period, pulse_width):
     Tds + Tw + 300us < Tp
     600ms <= Tp
     """
-    ADCMT.write('SP'+str(hold_time)+','+str(meas_delay)+','+str(period)+','+str(pulse_width))
+    ADCMT.write('SP%f,%f,%f,%f' % (hold_time, meas_delay, period, pulse_width))
 # -----------------------------------------------------------
 # Initialization
 # -----------------------------------------------------------
@@ -49,10 +49,10 @@ ADCMT.write('MD1')  # pulse gen
 # Constants
 # -----------------------------------------------------------
 mag_pulse_curr = 0.1
-HOLD_TIME = 3
+HOLD_TIME = 10
 MEAS_DELAY = 1
 PERIOD = 1300
-PULSE_WIDTH = 500
+PULSE_WIDTH = 1000
 # -----------------------------------------------------------
 # Trigger Settings:
 # -----------------------------------------------------------
@@ -60,10 +60,10 @@ ADCMT.write('LMV3')  # limit 3V
 ADCMT.write('DBI0')  # pulse base 0A
 set_pulse_timing(HOLD_TIME, MEAS_DELAY, PERIOD, PULSE_WIDTH)
 for loop in range(100):
-    ADCMT.write('SOI%f' % 0.2)
+    ADCMT.write('SOI%f' % 1e-3)
     ADCMT.write('OPR') # output on
     usleep(100000)
-    ADCMT.write('SOI%f' % -0.2)
+    ADCMT.write('SOI%f' % -1e-3)
     ADCMT.write('OPR') # output on
     usleep(100000)
 ADCMT.timeout = 2000  # Acquisition timeout in milliseconds - set it higher than the acquisition time

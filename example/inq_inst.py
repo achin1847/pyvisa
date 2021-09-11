@@ -1,5 +1,5 @@
 
-import visa
+import pyvisa as visa
 
 rm = visa.ResourceManager()
 list_insts = rm.list_resources()
