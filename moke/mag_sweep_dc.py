@@ -17,7 +17,7 @@ def set_sweep(start, stop, step):
     stop (A or V) : stop value of sweep
     step (A or V) : step value of sweep
     """
-    ADCMT.write('SN'+str(start)+','+str(stop)+','+str(step))
+    ADCMT.write('SN%f,%f,%f' % (start, stop, step))
 
 def set_pulse_timing(hold_time, meas_delay, period):
     """
@@ -29,7 +29,7 @@ def set_pulse_timing(hold_time, meas_delay, period):
     meas_delay (ms) : Td
     period (ms)     : Tp
     """
-    ADCMT.write('SP'+str(hold_time)+','+str(meas_delay)+','+str(period))
+    ADCMT.write('SP%f,%f,%f' % (hold_time, meas_delay, period))
 # -----------------------------------------------------------
 # Initialization
 # -----------------------------------------------------------
@@ -52,35 +52,29 @@ ADCMT.write('MD2')  # sweep gen mode
 # -----------------------------------------------------------
 # Constants
 # -----------------------------------------------------------
-START_CURR = -0.1
-STOP_CURR = 0.1
-STEP_CURR = 0.001
+START_CURR = -0.1 #A
+STOP_CURR = 0.1 #A
+STEP_CURR = 0.005 #A
 
-HOLD_TIME = 3
-MEAS_DELAY = 4
-PERIOD = 100
+HOLD_TIME = 1 #ms
+MEAS_DELAY = 4 #ms
+PERIOD = 100 #ms
 # -----------------------------------------------------------
 # Trigger Settings:
 # -----------------------------------------------------------
-ADCMT.write('LMV3')  # limit 3V
-ADCMT.write('DBI0')  # sweep bias 0A
-set_pulse_timing(HOLD_TIME, MEAS_DELAY, PERIOD)
-set_sweep(START_CURR, 0, STEP_CURR)
-ADCMT.write('ST1,RL') # memory store on & memory clear
-ADCMT.write('OPR') # output on
-ADCMT.write('*TRG') # sweep start
-sleep(10)
-ADCMT.write('SBY')  # output off
-set_pulse_timing(HOLD_TIME, MEAS_DELAY, PERIOD)
-set_sweep(0, STOP_CURR, STEP_CURR)
-ADCMT.write('ST1,RL') # memory store on & memory clear
-ADCMT.write('OPR') # output on
-ADCMT.write('*TRG') # sweep start
-sleep(10)
-ADCMT.timeout = 2000  # Acquisition timeout in milliseconds - set it higher than the acquisition time
-print('Waiting for the acquisition to finish... ')
-ADCMT.query('*OPC?')  # Using *OPC? query waits until the instrument finished the acquisition
 
+for loop in range(1):
+    ADCMT.write('LMV3')  # limit 3V
+    ADCMT.write('DBI0')  # sweep bias 0A
+    set_pulse_timing(HOLD_TIME, MEAS_DELAY, PERIOD)
+    set_sweep(START_CURR, STOP_CURR, STEP_CURR)
+    ADCMT.write('ST1,RL') # memory store on & memory clear
+    ADCMT.write('OPR') # output on
+    ADCMT.write('*TRG') # sweep start
+    sleep(10)
+    print('Waiting for the acquisition to finish... ')
+
+ADCMT.query('*OPC?')  # Using *OPC? query waits until the instrument finished the acquisition
 ADCMT.write('SBY')  # output off
 ADCMT.query('*OPC?')
 
