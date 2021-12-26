@@ -52,15 +52,15 @@ ADCMT.write('MD2')  # sweep gen mode
 # -----------------------------------------------------------
 # Constants
 # -----------------------------------------------------------
-START_CURR = -0.02 #A
-STOP_CURR = 0.02 #A
+START_CURR = -0.01 #A
+STOP_CURR = 0.01 #A
 # STEP_CURR = 0.0002 #A
 
 # HOLD_TIME = 1 #ms
-STEP_CURR_MIN = 0.00002 #A
+STEP_CURR_MIN = 0.00001 #A
 step_curr_point = STEP_CURR_MIN
 STEP_CURR_DELTA = 0.00001
-STEP_CURR_POINT_NUM = 11
+STEP_CURR_POINT_NUM = 21
 
 HOLDTIME_MIN = 1 #ms
 hold_time = HOLDTIME_MIN
