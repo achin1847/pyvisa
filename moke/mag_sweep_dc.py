@@ -1,5 +1,5 @@
 
-import visa
+import pyvisa as visa
 import matplotlib.pyplot as plt
 import numpy as np
 from time import sleep
@@ -52,30 +52,38 @@ ADCMT.write('MD2')  # sweep gen mode
 # -----------------------------------------------------------
 # Constants
 # -----------------------------------------------------------
-START_CURR = -0.1 #A
-STOP_CURR = 0.1 #A
-STEP_CURR = 0.005 #A
+START_CURR = -0.01 #A
+STOP_CURR = 0.01 #A
+# STEP_CURR = 0.0002 #A
 
-HOLD_TIME = 1 #ms
+# HOLD_TIME = 1 #ms
+STEP_CURR_MIN = 0.00001 #A
+step_curr_point = STEP_CURR_MIN
+STEP_CURR_DELTA = 0.00001
+STEP_CURR_POINT_NUM = 21
+
+HOLDTIME_MIN = 1 #ms
+hold_time = HOLDTIME_MIN
+HOLD_POINT_NUM = 1
+HOLDTIME_DELTA = 1
 MEAS_DELAY = 4 #ms
-PERIOD = 100 #ms
+PERIOD = hold_time + MEAS_DELAY + 5 #ms
 # -----------------------------------------------------------
 # Trigger Settings:
 # -----------------------------------------------------------
-
-for loop in range(1):
-    ADCMT.write('LMV3')  # limit 3V
-    ADCMT.write('DBI0')  # sweep bias 0A
-    set_pulse_timing(HOLD_TIME, MEAS_DELAY, PERIOD)
-    set_sweep(START_CURR, STOP_CURR, STEP_CURR)
-    ADCMT.write('ST1,RL') # memory store on & memory clear
-    ADCMT.write('OPR') # output on
-    ADCMT.write('*TRG') # sweep start
-    sleep(10)
-    print('Waiting for the acquisition to finish... ')
-
-ADCMT.query('*OPC?')  # Using *OPC? query waits until the instrument finished the acquisition
-ADCMT.write('SBY')  # output off
-ADCMT.query('*OPC?')
+ADCMT.write('LMV3')  # limit 3V
+ADCMT.write('DBI0')  # sweep bias 0A
+for step_curr_point in range(STEP_CURR_POINT_NUM):
+    step_curr = STEP_CURR_MIN + step_curr_point * STEP_CURR_DELTA
+    for hold_point in range(HOLD_POINT_NUM):
+        hold_time = HOLDTIME_MIN + hold_point * HOLDTIME_DELTA
+        set_pulse_timing(hold_time, MEAS_DELAY, PERIOD)
+        set_sweep(START_CURR, STOP_CURR, step_curr)
+        ADCMT.write('ST1,RL') # memory store on & memory clear
+        ADCMT.write('OPR') # output on
+        ADCMT.write('*TRG') # sweep start
+        sleep(60)
+        ADCMT.query('*OPC?')  # Using *OPC? query waits until the instrument finished the acquisition
+        ADCMT.write('SBY')  # output off
 
 ADCMT.close()
